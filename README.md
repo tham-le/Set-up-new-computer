@@ -42,6 +42,9 @@ look at ``FZF``
    ```
 
 4. Install Package Control:
+```
+https://packagecontrol.io/installation
+```
    - Open Sublime Text
    - Press ``Ctrl+P`` to open the console
    - Paste the installation code from packagecontrol.io and press Enter
