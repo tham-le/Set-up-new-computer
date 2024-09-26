@@ -21,6 +21,11 @@ sudo apt install git
 2. Find the line starting with `ZSH_THEME` and change it to your preferred theme
 
 ### Add plugins
+```
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+git clone https://github.com/MichaelAquilina/zsh-you-should-use.git $ZSH_CUSTOM/plugins/you-should-use
+```
 1. In `~/.zshrc`, find the line starting with `plugins=`
 2. Add your desired plugins, e.g., `plugins=(git)`
 3. Save the file and run `source ~/.zshrc` to apply changes
