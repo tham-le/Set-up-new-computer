@@ -1,4 +1,9 @@
 # Ubuntu New Computer Setup Guide
+```bash
+sudo apt install curl
+sudo apt install git
+```
+
 
 ## 1. Set up ZSH, Oh-My-Zsh, theme, and plugins
 
@@ -27,7 +32,7 @@ look at ``FZF``
 
 1. Install the GPG key:
    ```
-   wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
+   wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/sublimehq-archive.gpg > /dev/null
    ```
 
 2. Add the Sublime Text repository:
