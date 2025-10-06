@@ -52,7 +52,7 @@ echo "alias obsidian='/opt/Obsidian.AppImage'" >> ~/.zshrc
 
 - Git Setup
 
-```arduino
+```bash
 git config --global user.name "Your Name"
 git config --global user.email "you@example.com"
 ```
@@ -78,4 +78,13 @@ sudo apt-get install python3
 for uv
 ```
 curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+## 8. Rust Setup
+
+- Rust Setup
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+export PATH="$HOME/.cargo/bin:$PATH"
 ```
