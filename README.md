@@ -33,107 +33,21 @@ git clone https://github.com/MichaelAquilina/zsh-you-should-use.git $ZSH_CUSTOM/
 look at ``FZF``
 
 
-## 2. Set up Sublime Text
-
-1. Install the GPG key:
-   ```
-   wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/sublimehq-archive.gpg > /dev/null
-   ```
-
-2. Add the Sublime Text repository:
-   ```
-   echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
-   ```
-
-3. Update apt and install Sublime Text:
-   ```
-   sudo apt-get update
-   sudo apt-get install sublime-text
-   ```
-
-4. Install Package Control:
+## 2. Set up Zed
 ```
-https://packagecontrol.io/installation
-```
-   - Open Sublime Text
-   - Press ``Ctrl+P`` to open the console
-   - Paste the installation code from packagecontrol.io and press Enter
-
-5. Install desired packages:
-   - Press Ctrl+Shift+P
-   - Type "Package Control: Install Package"
-   - Search for and install desired packages
- 
- ```
- - A File Icon
- - BracketHighlighter
- - EasylangComplete
- - Gitignore
- - LSP
- - LSP-clangd
- - LSP-pylsp
- - MonokaiFree
-
- ```
-
- 6. Setting
-
-```
- {
-	"ignored_packages":
-	[
-		"Vintage",
-          ],
-	 "preview_on_click": true,
-	"index_files": true,
-	"save_on_focus_lost": true,
-	"draw_white_space": ["all"],
-	 "animation_enabled": false,
-    "block_caret": false,
-    "caret_extra_bottom": 0,
-    "caret_extra_top": 0,
-    "caret_style": "blink",
-    "file_tab_style": "square",
-    "color_scheme": "MonokaiFree.sublime-color-scheme",
-    "monokaifree.vcs_status_badges": false,
-    "theme": "Adaptive.sublime-theme",
-    "show_file": true,
-    "show_file_name": true,
-    "auto_complete": true,
-    "auto_complete_cycle": true,
-     "auto_complete_trailing_symbols": true,
-    "auto_complete_use_history": true,
-    "auto_complete_with_fields": true,
-}
+ curl -f https://zed.dev/install.sh | sh
 ```
 
-## 3. Set up Doxygen
 
-1. Install Doxygen:
-   ```
+## 3. Set up Obsidian
 
-   sudo apt-get update
-   sudo apt-get install flex
-   sudo apt-get install bison
-   sudo apt-get install libiconv
-   sudo apt-get install doxygen
-   sudo apt install doxygen-gui
-   ```
-
-2. Create a configuration file:
-   - Navigate to your project directory
-   - Run `doxygen -g` to generate a default Doxyfile
-
-3. Edit the Doxyfile to customize settings as needed:
-   ```
-   nano Doxyfile
-   ```
-
-4. To generate documentation, navigate to your project directory and run:
-   ```
-   doxygen Doxyfile
-   ```
-
+1. Download and install Obsidian from https://obsidian.md/download
+```
+chmod +x Obsidian.AppImage
+mv Obsidian.AppImage /opt/Obsidian.AppImage
+echo "export PATH=$PATH:/opt" >> ~/.zshrc
+echo "alias obsidian='/opt/Obsidian.AppImage'" >> ~/.zshrc
+```
 ### 4. Git Setup
 
 - Git Setup
@@ -142,7 +56,7 @@ https://packagecontrol.io/installation
 git config --global user.name "Your Name"
 git config --global user.email "you@example.com"
 ```
- 
+
 ### 5. Docker Installation
 
 ```
@@ -156,14 +70,12 @@ sudo systemctl enable docker
 ```
 ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 ```
-
+put the key in the GitHub
+### 7. Python and uv Setup
 ```
-ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+sudo apt-get install python3
 ```
-### 7. Python and Pip Setup
+for uv
 ```
-sudo apt-get install python3 python3-pip
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
-### 8. Syncthing
-
-https://syncthing.net/downloads/
