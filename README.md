@@ -4,20 +4,15 @@
 
 ### Create Backup Directory
 ```bash
-# Create backup location (adjust path as needed)
 mkdir -p ~/backup_$(date +%Y%m%d)
 ```
 
 ### Backup Home Directory with rsync
 ```bash
-# Backup entire home directory (excluding cache, temp files, and large SDKs)
 rsync -aAXv --info=progress2 \
     --exclude='.cache/' \
     --exclude='.local/share/Trash/' \
     --exclude='snap/' \
-    --exclude='android-ndk-r25c-linux.zip' \
-    --exclude='android-ndk-r25c/' \
-    --exclude='android-sdk-linux/' \
     --exclude='.cargo/registry/' \
     --exclude='.cargo/git/' \
     --exclude='.rustup/toolchains/*/share/doc/' \
@@ -30,53 +25,26 @@ rsync -aAXv --info=progress2 \
     ~/ ~/backup_$(date +%Y%m%d)/home_backup/
 ```
 
-**rsync flags explained:**
-- `-a`: Archive mode (preserves permissions, timestamps, symlinks, etc.)
-- `-A`: Preserve ACLs (Access Control Lists)
-- `-X`: Preserve extended attributes
-- `-v`: Verbose output
-- `--info=progress2`: Show overall progress
+**rsync flags:** `-a` archive, `-A` preserve ACLs, `-X` preserve extended attributes, `-v` verbose, `--info=progress2` overall progress.
 
 ### Save Installed Packages List
 ```bash
 cd ~/backup_$(date +%Y%m%d)
-
-# Save list of manually installed packages
 apt-mark showmanual > package_list.txt
-
-# Save all package selections
 dpkg --get-selections > installed_packages.txt
-
-# Save APT sources
 cp /etc/apt/sources.list sources.list.backup
 cp -r /etc/apt/sources.list.d/ apt_sources_backup/
 ```
 
 ### Backup Important Configurations
 ```bash
-# Copy system configs 
 sudo cp /etc/fstab fstab.backup 2>/dev/null || true
 sudo cp /etc/hosts hosts.backup 2>/dev/null || true
-
-# Document installed snaps
 snap list > snap_list.txt 2>/dev/null || true
-
-# Document Docker images/containers (if applicable)
 docker images > docker_images.txt 2>/dev/null || true
-docker ps -a > docker_containers.txt 2>/dev/null || true
 ```
 
-### Verify Your Backup
-```bash
-# Check backup size and contents
-du -sh ~/backup_$(date +%Y%m%d)/home_backup/
-ls -lh ~/backup_$(date +%Y%m%d)/
-
-echo "Backup location: ~/backup_$(date +%Y%m%d)"
-echo "Copy this entire directory to external drive or cloud storage"
-```
-
-**Important:** Copy the backup directory to an external drive, USB stick, or cloud storage before reinstalling Ubuntu.
+Copy the backup directory to an external drive before reinstalling.
 
 ---
 
@@ -84,36 +52,14 @@ echo "Copy this entire directory to external drive or cloud storage"
 
 ### Restore From Backup
 
-#### 1. Copy Backup to New System
 ```bash
-# Mount your backup drive or download from cloud
-# Then copy backup directory to home
-```
+# Mount backup drive, then restore home directory
+rsync -aAXv --info=progress2 home_backup/ ~/
 
-#### 2. Restore Home Directory with rsync
-```bash
-# Navigate to where you stored your backup
-cd /path/to/backup_YYYYMMDD
-
-# Restore home directory
-rsync -aAXv --info=progress2 \
-    home_backup/ ~/
-```
-
-#### 3. Fix Permissions
-```bash
+# Fix permissions
 sudo chown -R $USER:$USER ~/
-chmod 700 ~/.ssh  # if SSH keys exist
+chmod 700 ~/.ssh
 chmod 600 ~/.ssh/id_* 2>/dev/null || true
-```
-
-#### 4. Restore APT Sources (Optional)
-```bash
-# Only if you had custom PPAs
-cd /path/to/backup_YYYYMMDD
-sudo cp sources.list.backup /etc/apt/sources.list
-sudo cp -r apt_sources_backup/* /etc/apt/sources.list.d/
-sudo apt update
 ```
 
 ---
@@ -125,131 +71,183 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install curl git
 ```
 
-## 1. Set up ZSH, Oh-My-Zsh, theme, and plugins
+## 1. ZSH + Oh-My-Zsh
 
 ### Install ZSH
-1. Run: `sudo apt-get install zsh`
-2. Set ZSH as default shell: `chsh -s $(which zsh)`
-3. Log out and log back in
+```bash
+sudo apt install zsh
+chsh -s $(which zsh)
+# Log out and back in
+```
 
 ### Install Oh-My-Zsh
 ```bash
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 ```
 
-**Note:** If you restored your backup, your `.zshrc` is already configured. Otherwise, continue with theme and plugin setup below.
-
-### Add plugins (Skip if restored from backup)
+### Add plugins
 ```bash
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-git clone https://github.com/MichaelAquilina/zsh-you-should-use.git $ZSH_CUSTOM/plugins/you-should-use
+git clone https://github.com/MichaelAquilina/zsh-you-should-use.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/you-should-use
 ```
 
-Update plugins in `~/.zshrc`:
+### Apply config
 ```bash
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting you-should-use)
+cp .zshrc ~/.zshrc
+source ~/.zshrc
 ```
 
-Look at `FZF` for fuzzy finding.
+The included `.zshrc` sets up:
+- **Custom prompt** with full path + git branch/status (no theme)
+- **Plugins:** autosuggestions, syntax highlighting, you-should-use
+- **History:** 50k lines, dedup, shared across sessions
+- **Fuzzy git helpers:** `gbc` (checkout branch), `gfix` (fixup commit), `gadd` (stage files) — all via fzf
 
-## 2. Set up Zed
+## 2. CLI Power Tools
+
+### fd, fzf, bat, zoxide
+```bash
+sudo apt install fd-find fzf bat
+```
+
+Install zoxide:
+```bash
+curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+```
+
+These replace common tools with better defaults:
+- **fd** (`fdfind`) — faster `find`
+- **fzf** — fuzzy finder for files, history (Ctrl+R), branches
+- **bat** (`batcat`) — `cat` with syntax highlighting
+- **zoxide** — smarter `cd` that learns your frequent directories
+
+The `.zshrc` already wires these up with aliases (`bat` for `batcat`, `f` for fuzzy file search).
+
+## 3. GNOME Theme — Catppuccin
+
+### Install Catppuccin GTK theme
+```bash
+# Download from https://github.com/catppuccin/gtk/releases
+# Extract to /usr/share/themes/ (system-wide) or ~/.themes/ (user only)
+```
+
+### Install Papirus icons
+```bash
+sudo add-apt-repository ppa:papirus/papirus
+sudo apt update
+sudo apt install papirus-icon-theme
+```
+
+### Apply theme
+```bash
+gsettings set org.gnome.desktop.interface gtk-theme 'catppuccin-mocha-lavender-standard+default'
+gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Light'
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+```
+
+## 4. Fonts
+
+### JetBrains Mono (coding)
+```bash
+# Download from https://www.jetbrains.com/lp/mono/
+mkdir -p ~/.local/share/fonts
+cp JetBrainsMono*.ttf ~/.local/share/fonts/
+fc-cache -fv
+```
+
+### Fira Code (alternative)
+```bash
+sudo apt install fonts-firacode
+```
+
+### iA Writer Quattro (writing/notes)
+```bash
+# Download from https://github.com/iaolo/iA-Fonts
+cp ia-writer-quattro*.ttf ~/.local/share/fonts/
+fc-cache -fv
+```
+
+## 5. GNOME Extensions
+
+Install via https://extensions.gnome.org/ or `gnome-extensions`:
+
+- **Vitals** — system monitor in top bar (CPU, RAM, temp)
+- **Space Bar** — workspace indicator in top bar
+- **Blur my Shell** — blur effect on overview/panel
+- **Clipboard Indicator** — clipboard history manager
+- **Tiling Assistant** — window tiling (comes with Ubuntu)
+
+## 6. Zed Editor
 ```bash
 curl -f https://zed.dev/install.sh | sh
 ```
 
-## 3. Set up Obsidian
+Theme: **Catppuccin Macchiato** (set in Zed settings).
+
+## 7. Obsidian
 ```bash
 # Download from https://obsidian.md/download
 chmod +x Obsidian.AppImage
 sudo mv Obsidian.AppImage /opt/Obsidian.AppImage
-echo "export PATH=\$PATH:/opt" >> ~/.zshrc
-echo "alias obsidian='/opt/Obsidian.AppImage'" >> ~/.zshrc
-source ~/.zshrc
 ```
 
-**Note:** Your Obsidian vaults are already restored if you backed up your home directory.
-
-## 4. Git Setup
+## 8. Git Setup
 ```bash
 git config --global user.name "Your Name"
 git config --global user.email "you@example.com"
 ```
 
-**Note:** If restored from backup, your git config is already set.
-
-## 5. Docker Installation
+## 9. Docker
 ```bash
-sudo apt-get install docker.io
+sudo apt install docker.io
 sudo systemctl start docker
 sudo systemctl enable docker
-sudo usermod -aG docker $USER  # Add yourself to docker group
+sudo usermod -aG docker $USER
+# Log out and back in
 ```
 
-Log out and back in for docker group to take effect.
-
-## 6. SSH Key Setup
+## 10. SSH Key Setup
 ```bash
-# Generate new SSH key (skip if restored from backup)
 ssh-keygen -t ed25519 -C "your_email@example.com"
-
-# Start ssh-agent and add key
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_ed25519
 
-# Copy public key to clipboard (install xclip if needed)
+# Copy to clipboard
 sudo apt install xclip
 xclip -selection clipboard < ~/.ssh/id_ed25519.pub
 ```
 
 Add the key to GitHub at https://github.com/settings/keys
 
-**Note:** If you restored from backup, your SSH keys are already in `~/.ssh/`
-
-## 7. Python and uv Setup
+## 11. Python + uv
 ```bash
-sudo apt-get install python3 python3-pip python3-venv
-```
-
-Install uv:
-```bash
+sudo apt install python3 python3-pip python3-venv
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-## 8. Rust Setup
+## 12. Rust
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source "$HOME/.cargo/env"
 ```
 
-**Note:** If restored from backup, Rust toolchain is already installed but you may need to update:
+## 13. NVM (Node.js)
 ```bash
-rustup update
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+# Restart shell, then:
+nvm install --lts
 ```
-
-
-## Quick Restore Packages (Optional Method)
-
-If you want to reinstall all your previous packages at once:
-
-```bash
-# From your backup directory
-sudo apt update
-xargs sudo apt install -y < package_list.txt
-```
-
-This will reinstall everything you had before, though it may take some time.
 
 ---
 
 ## Verification Checklist
 
-After setup, verify everything works:
-- [ ] ZSH loads with your theme and plugins
-- [ ] Git commands work with your credentials
-- [ ] SSH keys work (test with `ssh -T git@github.com`)
+- [ ] ZSH loads with custom prompt and plugins
+- [ ] Git credentials work (`ssh -T git@github.com`)
 - [ ] Docker runs without sudo
-- [ ] Python and uv are accessible
-- [ ] Rust compiler works (`rustc --version`)
-- [ ] Your development projects still build
-- [ ] Obsidian opens your vaults correctly
+- [ ] `fzf`, `fd`, `bat`, `zoxide` all work
+- [ ] Catppuccin theme applied (dark mode)
+- [ ] Zed opens with Catppuccin Macchiato theme
+- [ ] Python, uv, Rust, Node accessible
+- [ ] Obsidian opens vaults
