@@ -354,13 +354,4 @@ sudo systemctl enable --now docker
 sudo usermod -aG docker $USER
 ```
 
-### Arch
-
-```bash
-sudo pacman -Syu
-sudo pacman -S curl git zsh fd fzf bat xclip python python-pip ghostty papirus-icon-theme docker
-sudo systemctl enable --now docker
-sudo usermod -aG docker $USER
-```
-
-> **Note:** On Arch/Fedora, `fd` and `bat` use their real names — no aliases needed. You can remove the `alias bat='batcat'` line from `.zshrc`.
+> **Note:** On Fedora, `fd` and `bat` use their real names — no aliases needed. You can remove the `alias bat='batcat'` line from `.zshrc`.
