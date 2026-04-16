@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ghostty Stickers 5cm</title>
+<style>
+  @page { size: 5cm 5cm; margin: 0; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "JetBrains Mono", "Fira Code", monospace;
+    color: #000; background: #fff;
+  }
+  .sticker {
+    width: 5cm; height: 5cm;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 8mm; box-sizing: border-box;
+    text-align: center;
+    font-size: 8pt; line-height: 1.6;
+    page-break-after: always;
+  }
+  .sticker:last-child { page-break-after: auto; }
+  h1 {
+    font-size: 10pt; font-weight: 900;
+    letter-spacing: 0.6mm; margin: 0 0 2mm 0;
+    text-decoration: underline;
+  }
+  kbd {
+    font-family: inherit; font-weight: bold;
+    border: 0.2mm solid #000;
+    padding: 0.2mm 0.8mm; border-radius: 0.8mm;
+  }
+</style>
+</head>
+<body>
+
+<div class="sticker">
+  <h1>SPLITS</h1>
+  <div><kbd>Alt \</kbd> → <kbd>Alt -</kbd> ↓</div>
+  <div><kbd>Alt x</kbd> close <kbd>Alt z</kbd> zoom</div>
+  <div style="white-space: nowrap;">move: <kbd>Alt hjkl</kbd></div>
+  <div style="white-space: nowrap;">or <kbd>Ctrl&nbsp;←↓↑→</kbd></div>
+  <div>size: <kbd>Alt HJKL</kbd></div>
+</div>
+
+<div class="sticker">
+  <h1>TABS</h1>
+  <div><kbd>Alt t</kbd> new</div>
+  <div><kbd>Alt w</kbd> close</div>
+  <div><kbd>Alt 1-5</kbd> · <kbd>Alt ←→</kbd></div>
+</div>
+
+</body>
+</html>
